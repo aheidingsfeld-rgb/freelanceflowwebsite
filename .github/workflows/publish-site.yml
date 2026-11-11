@@ -1,0 +1,36 @@
+name: Publish FreelanceFlow website
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/publish-site.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+
+      - name: Restore the website files
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl -fsSL "https://dmmcy0pwk6bqi.cloudfront.net/40bcb8e4cb2fea5fc8afb09cbd16e3c876756390" -o /tmp/site.part1
+          curl -fsSL "https://dmmcy0pwk6bqi.cloudfront.net/3b09f1150aa4d407efe5a0869fca373963ec9107" -o /tmp/site.part2
+          cat /tmp/site.part1 /tmp/site.part2 > /tmp/freelanceflow-site.tar.gz
+          test "$(wc -c < /tmp/freelanceflow-site.tar.gz)" -eq 50352
+          test "$(sha1sum /tmp/freelanceflow-site.tar.gz | cut -d' ' -f1)" = "cf1732a415591910848246dbb67888ad50345e1e"
+          tar -tzf /tmp/freelanceflow-site.tar.gz >/dev/null
+          tar -xzf /tmp/freelanceflow-site.tar.gz -C .
+          rm -f /tmp/site.part1 /tmp/site.part2 /tmp/freelanceflow-site.tar.gz
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "Publish FreelanceFlow website with animations"
+          git push
