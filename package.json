@@ -3,6 +3,6 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "build": "mkdir -p dist && cat site-part-a.b64 site-part-b.b64 | base64 -d > /tmp/site.tar.gz && tar -xzf /tmp/site.tar.gz -C dist && node fix-css.cjs"
+    "build": "mkdir -p dist && cat site-part-a.b64 site-part-b.b64 | base64 -d > /tmp/site.tar.gz && tar -xzf /tmp/site.tar.gz -C dist && node fix-css.cjs && node improve-site.cjs"
   }
 }
