@@ -1,0 +1,43 @@
+
+<style id="freelanceflow-motion">
+@media (prefers-reduced-motion: no-preference) {
+  html.motion-ready .ff-reveal { opacity:0; transform:translate3d(0,24px,0); transition:opacity .72s cubic-bezier(.2,.7,.2,1),transform .72s cubic-bezier(.2,.7,.2,1); }
+  html.motion-ready .ff-reveal.ff-visible { opacity:1; transform:translate3d(0,0,0); }
+  html.motion-ready .ff-stagger > .ff-reveal:nth-child(2) { transition-delay:90ms; }
+  html.motion-ready .ff-stagger > .ff-reveal:nth-child(3) { transition-delay:160ms; }
+  html.motion-ready .ff-stagger > .ff-reveal:nth-child(4) { transition-delay:230ms; }
+  html.motion-ready .ff-stagger > .ff-reveal:nth-child(5) { transition-delay:300ms; }
+  html.motion-ready .ff-stagger > .ff-reveal:nth-child(6) { transition-delay:370ms; }
+  .hero, .industry-hero { animation:ff-hero-in .8s cubic-bezier(.2,.7,.2,1) both; }
+  @keyframes ff-hero-in { from { opacity:0; transform:translateY(14px); } to { opacity:1; transform:translateY(0); } }
+  .card, .portfolio-item, .detail-card, .step, .industry-preview { transition:transform .25s ease, box-shadow .25s ease, border-color .25s ease; }
+  .card:hover, .portfolio-item:hover, .detail-card:hover, .step:hover, .industry-preview:hover { transform:translateY(-4px); }
+  .btn, .lang, .lang-btn { transition:transform .2s ease,background-color .2s ease,box-shadow .2s ease; }
+  .btn:hover { transform:translateY(-2px); box-shadow:0 8px 24px #00000020; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { scroll-behavior:auto !important; animation-duration:.01ms !important; animation-iteration-count:1 !important; transition-duration:.01ms !important; }
+}
+</style>
+google-site-verification: googlec59fe2d8d521a917.html
+<script id="freelanceflow-motion-script">
+(function(){
+  var reduce=window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if(reduce || !('IntersectionObserver' in window)) return;
+  document.documentElement.classList.add('motion-ready');
+  function init(){
+    var selectors='main section, .section, .section-intro, .section-head, .card, .portfolio-item, .detail-card, .step, .industry-preview';
+    var nodes=Array.prototype.slice.call(document.querySelectorAll(selectors));
+    nodes=nodes.filter(function(el){return !el.closest('header') && !el.closest('footer') && !el.classList.contains('hero') && !el.classList.contains('industry-hero');});
+    nodes.forEach(function(el){el.classList.add('ff-reveal');});
+    document.querySelectorAll('.grid, .cards, .portfolio-grid, .steps, .industry-grid').forEach(function(el){el.classList.add('ff-stagger');});
+    var observer=new IntersectionObserver(function(entries){
+      entries.forEach(function(entry){
+        if(entry.isIntersecting){entry.target.classList.add('ff-visible');observer.unobserve(entry.target);}
+      });
+    },{threshold:.12,rootMargin:'0px 0px -48px 0px'});
+    nodes.forEach(function(el){observer.observe(el);});
+  }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',init,{once:true}); else init();
+})();
+</script>
