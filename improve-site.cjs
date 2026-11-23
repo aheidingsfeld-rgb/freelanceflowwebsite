@@ -71,7 +71,7 @@ const pricingPatch = `<script id="freelanceflow-pricing">
     if (!section) return;
     let cards = Array.from(section.querySelectorAll(".pricing-card,.price-card,.pricing-plan,.plan-card,[class*='pricing'] article,[class*='price'] article,[class*='plan'] article"));
     if (cards.length < 3) {
-      cards = Array.from(section.querySelectorAll("article,li,[class*='card'],[class*='plan'],[class*='tier']")).filter(el => /basic/i.test(el.innerText || "") && /€/.test(el.innerText || ""));
+      cards = Array.from(section.querySelectorAll("article,li,[class*='card'],[class*='plan'],[class*='tier']")).filter(el => /(basic|professional|premium)/i.test(el.innerText || "") && /€/.test(el.innerText || ""));
     }
     cards = cards.filter((el,i,arr) => !arr.some(other => other !== el && other.contains(el) && /basic/i.test(other.innerText || "") && /€/.test(other.innerText || "")));
     if (cards.length < 3) return;
@@ -80,8 +80,8 @@ const pricingPatch = `<script id="freelanceflow-pricing">
       const walker = document.createTreeWalker(card, NodeFilter.SHOW_TEXT);
       let node, replaced = false;
       while ((node = walker.nextNode())) {
-        if (!replaced && /€\s?[\d.,]+|[\d.,]+\s?€/i.test(node.nodeValue || "")) {
-          node.nodeValue = node.nodeValue.replace(/€\s?[\d.,]+|[\d.,]+\s?€/i, prices[index]);
+        if (!replaced && /€\\s?[\d.,]+|[\d.,]+\\s?€/i.test(node.nodeValue || "")) {
+          node.nodeValue = node.nodeValue.replace(/€\\s?[\d.,]+|[\d.,]+\\s?€/i, prices[index]);
           replaced = true;
         }
       }
