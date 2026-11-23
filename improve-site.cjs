@@ -157,7 +157,6 @@ if (!h.includes('id="delivery-time-translations"')) h = h.replace("</body>", del
 
 // Replace every contact form with a robust Web3Forms integration.
 // The hidden access_key also supports a normal HTML form POST if JavaScript fails.
-h = h.replace(/action=(["'])https?:\\/\\/formsubmit\\.co(?:\\/[^"']*)?\\1/gi, 'action="https://api.web3forms.com/submit"');
 const web3formsIntegration = `<script id="freelanceflow-web3forms">
 (function(){
   const ACCESS_KEY = "fb7fd23f-be30-46a5-81c7-f39c04368766";
