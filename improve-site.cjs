@@ -48,5 +48,66 @@ const css=[
 '</style>'
 ].join('\n');
 h=h.replace("</head>",css+"</head>");
+
+const pricingPatch = `<script id="freelanceflow-pricing">
+(function(){
+  const prices = ["€39", "€299", "€399"];
+  const copy = {
+    nl: {seo:"SEO inbegrepen", promo:"WELCOME PROMOTION"},
+    fr: {seo:"SEO inclus", promo:"OFFRE DE BIENVENUE"},
+    en: {seo:"SEO included", promo:"WELCOME PROMOTION"}
+  };
+  function applyPricing(){
+    const lang = (document.documentElement.lang || document.documentElement.getAttribute("data-lang") || "nl").slice(0,2).toLowerCase();
+    const words = copy[lang] || copy.nl;
+    const headings = Array.from(document.querySelectorAll("h1,h2,h3,h4")).filter(el => /prijs|pricing|tarif|offre|plan|pakket/i.test(el.textContent || ""));
+    let section = headings.map(el => el.closest("section") || el.parentElement).find(el => el && /€|pricing|tarief|prijs|pakket|plan/i.test(el.innerText || ""));
+    if (!section) {
+      section = Array.from(document.querySelectorAll("section,main,div")).find(el => {
+        const t = (el.innerText || "").slice(0,5000);
+        return /€/.test(t) && /basic/i.test(t) && /(professional|premium)/i.test(t) && el.querySelectorAll("*").length < 250;
+      });
+    }
+    if (!section) return;
+    let cards = Array.from(section.querySelectorAll(".pricing-card,.price-card,.pricing-plan,.plan-card,[class*='pricing'] article,[class*='price'] article,[class*='plan'] article"));
+    if (cards.length < 3) {
+      cards = Array.from(section.querySelectorAll("article,li,[class*='card'],[class*='plan'],[class*='tier']")).filter(el => /basic/i.test(el.innerText || "") && /€/.test(el.innerText || ""));
+    }
+    cards = cards.filter((el,i,arr) => !arr.some(other => other !== el && other.contains(el) && /basic/i.test(other.innerText || "") && /€/.test(other.innerText || "")));
+    if (cards.length < 3) return;
+    cards = cards.slice(0,3);
+    cards.forEach((card,index) => {
+      const walker = document.createTreeWalker(card, NodeFilter.SHOW_TEXT);
+      let node, replaced = false;
+      while ((node = walker.nextNode())) {
+        if (!replaced && /€\s?[\d.,]+|[\d.,]+\s?€/i.test(node.nodeValue || "")) {
+          node.nodeValue = node.nodeValue.replace(/€\s?[\d.,]+|[\d.,]+\s?€/i, prices[index]);
+          replaced = true;
+        }
+      }
+      if (!card.querySelector(".ff-seo-included")) {
+        const line = document.createElement("p");
+        line.className = "ff-seo-included";
+        line.textContent = "✓ " + words.seo;
+        line.style.cssText = "margin:10px 0 0;font-size:.9em;font-weight:600;color:inherit";
+        card.appendChild(line);
+      }
+      if (index === 0 && !card.querySelector(".ff-welcome-promo")) {
+        const tag = document.createElement("span");
+        tag.className = "ff-welcome-promo";
+        tag.textContent = words.promo;
+        tag.style.cssText = "display:inline-block;margin:0 0 10px;padding:6px 10px;border-radius:99px;background:#d9f99d;color:#20331b;font-size:11px;font-weight:800;letter-spacing:.06em";
+        const title = card.querySelector("h2,h3,h4") || card.firstElementChild;
+        if (title) title.insertAdjacentElement("beforebegin", tag); else card.prepend(tag);
+      }
+    });
+  }
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", applyPricing);
+  else applyPricing();
+  document.addEventListener("change", function(e){ if(e.target && /lang|language/i.test((e.target.name||"")+" "+(e.target.id||""))) setTimeout(applyPricing,50); });
+})();
+</script>`;
+h = h.replace("</body>", pricingPatch + "</body>");
+
 fs.writeFileSync(file,h);
 console.log("FreelanceFlow homepage, portfolio, multilingual copy and lead form updated.");
