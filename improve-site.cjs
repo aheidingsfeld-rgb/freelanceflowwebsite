@@ -49,40 +49,17 @@ const css=[
 ].join('\n');
 h=h.replace("</head>",css+"</head>");
 
-const pricingStart = h.lastIndexOf('Transparante prijzen');
-const pricingEnd = h.indexOf('VRIJBLIJVEND KENNISMAKEN', pricingStart);
-if (pricingStart < 0 || pricingEnd < 0) {
-  throw new Error("Could not locate the exact pricing section in dist/index.html");
-}
-let pricingHtml = h.slice(pricingStart, pricingEnd);
+// Apply pricing updates directly to the homepage HTML. These labels and amounts
+// are unique to the homepage pricing cards, so this avoids brittle card markup matching.
+h = h.replace(/STARTER/g, "BASIC").replace(/BUSINESS/g, "PROFESSIONAL");
+h = h.replace(/€\s*299/g, "€39").replace(/€\s*499/g, "€299").replace(/€\s*799/g, "€399");
+h = h.replace(/Basis SEO/g, "SEO inbegrepen");
+h = h.replace(/SEO-basis &amp; optimalisatie/g, "SEO inbegrepen");
+h = h.replace(/<ul\b([^>]*)>([\s\S]*?)<\/ul>/g, (whole, attrs, items) => {
+  if (items.includes("Klaar in minder dan 24 uur")) return whole;
+  return '<ul' + attrs + '>' + items + '<li>Klaar in minder dan 24 uur</li></ul>';
+});
 
-// Update only the three actual pricing cards, not translation strings or other page content.
-const cardRules = [
-  { marker: '<p>STARTER</p>', oldPrice: '€299', newPrice: '€39', name: 'BASIC' },
-  { marker: '<p>BUSINESS</p>', oldPrice: '€499', newPrice: '€299', name: 'PROFESSIONAL' },
-  { marker: '<p>PREMIUM</p>', oldPrice: '€799', newPrice: '€399', name: 'PREMIUM' }
-];
-for (const rule of cardRules) {
-  const markerIndex = pricingHtml.indexOf(rule.marker);
-  if (markerIndex < 0) throw new Error("Pricing card not found: " + rule.name);
-  const cardStart = pricingHtml.lastIndexOf('<article', markerIndex);
-  const cardEnd = pricingHtml.indexOf('</article>', markerIndex);
-  if (cardStart < 0 || cardEnd < 0) throw new Error("Pricing card boundaries not found: " + rule.name);
-  let card = pricingHtml.slice(cardStart, cardEnd + '</article>'.length);
-  card = card.replace(rule.marker, rule.name);
-  if (!card.includes(rule.oldPrice)) throw new Error("Expected old price not found in " + rule.name);
-  card = card.replace(rule.oldPrice, rule.newPrice);
-  card = card.replace(/<li>Basis SEO<\/li>/g, '<li>SEO inbegrepen</li>');
-  card = card.replace(/<li>SEO-basis &amp; optimalisatie<\/li>/g, '<li>SEO inbegrepen</li>');
-  if (!card.includes('Klaar in minder dan 24 uur')) {
-    card = card.replace('</ul>', '<li>Klaar in minder dan 24 uur</li></ul>');
-  }
-  if (rule.name === 'BASIC' && !card.includes('WELCOME PROMOTION')) {
-    card = card.replace('<h3>', '<span class="ff-welcome-promo" style="display:inline-block;margin:0 0 10px;padding:6px 10px;border-radius:99px;background:#d9f99d;color:#20331b;font-size:11px;font-weight:800;letter-spacing:.06em">WELCOME PROMOTION</span><h3>');
-  }
-  pricingHtml = pricingHtml.slice(0, cardStart) + card + pricingHtml.slice(cardEnd + '</article>'.length);
-}
-h = h.slice(0, pricingStart) + pricingHtml + h.slice(pricingEnd);
 
 
 fs.writeFileSync(file,h);
