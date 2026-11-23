@@ -92,5 +92,43 @@ const industryLanguageScript = `<script id="industry-dropdown-translations">
 </script>`;
 if (!h.includes('id="industry-dropdown-translations"')) h = h.replace("</body>", industryLanguageScript + "</body>");
 
+// Translate the remaining Dutch form placeholders when the visitor selects French or English.
+const formPlaceholderTranslations = `<script id="form-placeholder-translations">
+(function(){
+  const translations = {
+    nl: {
+      "Voornaam en naam":"Voornaam en naam",
+      "Naam van je zaak":"Naam van je zaak",
+      "Bijvoorbeeld: meer afspraken, offerteaanvragen of informatie over mijn diensten.":"Bijvoorbeeld: meer afspraken, offerteaanvragen of informatie over mijn diensten."
+    },
+    fr: {
+      "Voornaam en naam":"Prénom et nom",
+      "Naam van je zaak":"Nom de votre entreprise",
+      "Bijvoorbeeld: meer afspraken, offerteaanvragen of informatie over mijn diensten.":"Par exemple : obtenir plus de rendez-vous, recevoir des demandes de devis ou informer les clients sur mes services."
+    },
+    en: {
+      "Voornaam en naam":"First and last name",
+      "Naam van je zaak":"Business name",
+      "Bijvoorbeeld: meer afspraken, offerteaanvragen of informatie over mijn diensten.":"For example: more appointments, quote requests or information about my services."
+    }
+  };
+  const original = new WeakMap();
+  function update(){
+    const lang=(document.documentElement.lang||"nl").slice(0,2);
+    const dict=translations[lang]||translations.nl;
+    document.querySelectorAll("input[placeholder],textarea[placeholder]").forEach(el=>{
+      if(!original.has(el)) original.set(el,el.getAttribute("placeholder"));
+      const value=original.get(el);
+      if(dict[value]) el.setAttribute("placeholder",dict[value]);
+    });
+  }
+  document.addEventListener("DOMContentLoaded",update);
+  new MutationObserver(update).observe(document.documentElement,{attributes:true,attributeFilter:["lang"]});
+  document.addEventListener("click",()=>setTimeout(update,0));
+  update();
+})();
+</script>`;
+if (!h.includes('id="form-placeholder-translations"')) h = h.replace("</body>", formPlaceholderTranslations + "</body>");
+
 fs.writeFileSync(file,h);
 console.log("FreelanceFlow homepage, portfolio, multilingual copy and lead form updated.");
