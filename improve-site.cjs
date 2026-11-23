@@ -70,8 +70,8 @@ const pricingPatch = `<script id="freelanceflow-pricing">
       const walker = document.createTreeWalker(card, NodeFilter.SHOW_TEXT);
       let node, changed = false;
       while ((node = walker.nextNode())) {
-        if (!changed && /€\s*[\d.,]+/.test(node.nodeValue || "")) {
-          node.nodeValue = node.nodeValue.replace(/€\s*[\d.,]+/, prices[index]);
+        if (!changed && /€\\s*[\d.,]+/.test(node.nodeValue || "")) {
+          node.nodeValue = node.nodeValue.replace(/€\\s*[\d.,]+/, prices[index]);
           changed = true;
         }
       }
