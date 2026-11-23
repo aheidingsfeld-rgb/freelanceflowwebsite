@@ -52,7 +52,7 @@ h=h.replace("</head>",css+"</head>");
 // Apply pricing updates directly to the homepage HTML. These labels and amounts
 // are unique to the homepage pricing cards, so this avoids brittle card markup matching.
 h = h.replace(/STARTER/g, "BASIC").replace(/BUSINESS/g, "PROFESSIONAL");
-h = h.replace(/€\s*299/g, "€39").replace(/€\s*499/g, "€299").replace(/€\s*799/g, "€399");
+h = h.replace(/€\s*299/g, "€39").replace(/€\s*499/g, "€199").replace(/€\s*799/g, "€299");
 h = h.replace(/Basis SEO/g, "SEO inbegrepen");
 h = h.replace(/SEO-basis &amp; optimalisatie/g, "SEO inbegrepen");
 h = h.replace(/<ul\b([^>]*)>([\s\S]*?)<\/ul>/g, (whole, attrs, items) => {
