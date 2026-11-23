@@ -63,12 +63,13 @@ const cardRules = [
   { marker: '<p>PREMIUM</p>', oldPrice: '€799', newPrice: '€399', name: 'PREMIUM' }
 ];
 for (const rule of cardRules) {
-  const cardStart = pricingHtml.indexOf(rule.marker);
-  if (cardStart < 0) throw new Error("Pricing card not found: " + rule.name);
-  const cardEnd = pricingHtml.indexOf('</article>', cardStart);
-  if (cardEnd < 0) throw new Error("Pricing card closing tag not found: " + rule.name);
+  const markerIndex = pricingHtml.indexOf(rule.marker);
+  if (markerIndex < 0) throw new Error("Pricing card not found: " + rule.name);
+  const cardStart = pricingHtml.lastIndexOf('<article', markerIndex);
+  const cardEnd = pricingHtml.indexOf('</article>', markerIndex);
+  if (cardStart < 0 || cardEnd < 0) throw new Error("Pricing card boundaries not found: " + rule.name);
   let card = pricingHtml.slice(cardStart, cardEnd + '</article>'.length);
-  card = card.replace(rule.marker, '<p>' + rule.name + '</p>');
+  card = card.replace(rule.marker, rule.name);
   if (!card.includes(rule.oldPrice)) throw new Error("Expected old price not found in " + rule.name);
   card = card.replace(rule.oldPrice, rule.newPrice);
   card = card.replace(/<li>Basis SEO<\/li>/g, '<li>SEO inbegrepen</li>');
