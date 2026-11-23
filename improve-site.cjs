@@ -154,5 +154,53 @@ const deliveryTimeTranslations = `<script id="delivery-time-translations">
 </script>`;
 if (!h.includes('id="delivery-time-translations"')) h = h.replace("</body>", deliveryTimeTranslations + "</body>");
 
+
+const web3formsIntegration = `<script id="freelanceflow-web3forms">
+(function(){
+  const accessKey = ${JSON.stringify(key)};
+  function setupContactForm(){
+    const forms = Array.from(document.querySelectorAll("form"));
+    const form = forms.find(f => /formsubmit\\.co/i.test(f.getAttribute("action") || "")) || forms.find(f => f.querySelector('input[name="_subject"],input[name="email"],input[type="email"]'));
+    if (!form || form.dataset.web3formsReady) return;
+    form.dataset.web3formsReady = "true";
+    form.addEventListener("submit", async function(event){
+      event.preventDefault();
+      const submit = form.querySelector('button[type="submit"],input[type="submit"],button:not([type])');
+      const oldText = submit && (submit.textContent || submit.value);
+      if (submit) { submit.disabled = true; if (submit.tagName === "INPUT") submit.value = "Verzenden..."; else submit.textContent = "Verzenden..."; }
+      try {
+        const data = new FormData(form);
+        data.delete("_next"); data.delete("_template"); data.delete("_captcha");
+        data.set("access_key", accessKey);
+        data.set("subject", "Nieuwe aanvraag via FreelanceFlow");
+        data.set("from_name", "FreelanceFlow website");
+        const response = await fetch("https://api.web3forms.com/submit", { method:"POST", body:data });
+        const result = await response.json();
+        if (!response.ok || !result.success) throw new Error(result.message || "Verzenden mislukt");
+        let notice = document.getElementById("web3formsSuccess");
+        if (!notice) {
+          notice = document.createElement("div");
+          notice.id = "web3formsSuccess";
+          notice.setAttribute("role","status");
+          notice.style.cssText = "margin:18px 0;padding:16px 18px;border:1px solid #789d4d;border-radius:10px;background:#1b281d;color:#e8f0e3;font-weight:650";
+          form.parentNode.insertBefore(notice, form);
+        }
+        const lang = (document.documentElement.lang || "nl").slice(0,2);
+        notice.textContent = ({nl:"Bedankt! Je aanvraag is verzonden. We nemen zo snel mogelijk contact met je op.",fr:"Merci ! Votre demande a bien été envoyée. Nous vous contacterons dès que possible.",en:"Thank you! Your request has been sent. We will get back to you as soon as possible."})[lang] || "Thank you! Your request has been sent.";
+        notice.scrollIntoView({behavior:"smooth",block:"center"});
+        form.reset();
+      } catch (error) {
+        alert("Je aanvraag kon niet worden verzonden. Probeer het opnieuw of neem rechtstreeks contact met ons op.");
+      } finally {
+        if (submit) { submit.disabled = false; if (submit.tagName === "INPUT") submit.value = oldText; else submit.textContent = oldText; }
+      }
+    });
+  }
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", setupContactForm);
+  else setupContactForm();
+})();
+</script>`;
+if (!h.includes('id="freelanceflow-web3forms"')) h = h.replace("</body>", web3formsIntegration + "</body>");
+
 fs.writeFileSync(file,h);
 console.log("FreelanceFlow homepage, portfolio, multilingual copy and lead form updated.");
