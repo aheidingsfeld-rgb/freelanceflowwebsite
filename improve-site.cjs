@@ -49,21 +49,39 @@ const css=[
 ].join('\n');
 h=h.replace("</head>",css+"</head>");
 
-const pricingStart = h.indexOf("Transparante prijzen");
-const pricingEnd = h.indexOf("VRIJBLIJVEND KENNISMAKEN", pricingStart);
+const pricingStart = h.indexOf('<p>Transparante prijzen</p>');
+const pricingEnd = h.indexOf('<p>VRIJBLIJVEND KENNISMAKEN</p>', pricingStart);
 if (pricingStart < 0 || pricingEnd < 0) {
-  throw new Error("Could not locate the pricing section in dist/index.html");
+  throw new Error("Could not locate the exact pricing section in dist/index.html");
 }
 let pricingHtml = h.slice(pricingStart, pricingEnd);
-pricingHtml = pricingHtml.replace(/STARTER/g, "BASIC").replace(/BUSINESS/g, "PROFESSIONAL");
-const newPrices = ["€39", "€299", "€399"];
-let priceIndex = 0;
-pricingHtml = pricingHtml.replace(/€\s*[\d.,]+/g, () => newPrices[priceIndex++] || "€399");
-pricingHtml = pricingHtml.replace(/Basis SEO/g, "SEO inbegrepen");
-pricingHtml = pricingHtml.replace(/SEO-basis &amp; optimalisatie/g, "SEO inbegrepen &amp; optimalisatie");
-pricingHtml = pricingHtml.replace(/(<article\b[^>]*>[\s\S]*?)(<h3\b)/, '$1<span class="ff-welcome-promo" style="display:inline-block;margin:0 0 10px;padding:6px 10px;border-radius:99px;background:#d9f99d;color:#20331b;font-size:11px;font-weight:800;letter-spacing:.06em">WELCOME PROMOTION</span>$2');
-h = h.slice(0, pricingStart) + pricingHtml + h.slice(pricingEnd);
 
+// Update only the three actual pricing cards, not translation strings or other page content.
+const cardRules = [
+  { marker: '<p>STARTER</p>', oldPrice: '€299', newPrice: '€39', name: 'BASIC' },
+  { marker: '<p>BUSINESS</p>', oldPrice: '€499', newPrice: '€299', name: 'PROFESSIONAL' },
+  { marker: '<p>PREMIUM</p>', oldPrice: '€799', newPrice: '€399', name: 'PREMIUM' }
+];
+for (const rule of cardRules) {
+  const cardStart = pricingHtml.indexOf(rule.marker);
+  if (cardStart < 0) throw new Error("Pricing card not found: " + rule.name);
+  const cardEnd = pricingHtml.indexOf('</article>', cardStart);
+  if (cardEnd < 0) throw new Error("Pricing card closing tag not found: " + rule.name);
+  let card = pricingHtml.slice(cardStart, cardEnd + '</article>'.length);
+  card = card.replace(rule.marker, '<p>' + rule.name + '</p>');
+  if (!card.includes(rule.oldPrice)) throw new Error("Expected old price not found in " + rule.name);
+  card = card.replace(rule.oldPrice, rule.newPrice);
+  card = card.replace(/<li>Basis SEO<\/li>/g, '<li>SEO inbegrepen</li>');
+  card = card.replace(/<li>SEO-basis &amp; optimalisatie<\/li>/g, '<li>SEO inbegrepen</li>');
+  if (!card.includes('Klaar in minder dan 24 uur')) {
+    card = card.replace('</ul>', '<li>Klaar in minder dan 24 uur</li></ul>');
+  }
+  if (rule.name === 'BASIC' && !card.includes('WELCOME PROMOTION')) {
+    card = card.replace('<h3>', '<span class="ff-welcome-promo" style="display:inline-block;margin:0 0 10px;padding:6px 10px;border-radius:99px;background:#d9f99d;color:#20331b;font-size:11px;font-weight:800;letter-spacing:.06em">WELCOME PROMOTION</span><h3>');
+  }
+  pricingHtml = pricingHtml.slice(0, cardStart) + card + pricingHtml.slice(cardEnd + '</article>'.length);
+}
+h = h.slice(0, pricingStart) + pricingHtml + h.slice(pricingEnd);
 
 
 fs.writeFileSync(file,h);
