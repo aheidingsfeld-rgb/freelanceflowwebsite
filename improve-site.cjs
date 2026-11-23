@@ -130,5 +130,29 @@ const formPlaceholderTranslations = `<script id="form-placeholder-translations">
 </script>`;
 if (!h.includes('id="form-placeholder-translations"')) h = h.replace("</body>", formPlaceholderTranslations + "</body>");
 
+
+const deliveryTimeTranslations = `<script id="delivery-time-translations">
+(function(){
+  const copy = {
+    nl: "Klaar in minder dan 24 uur",
+    fr: "Prêt en moins de 24 heures",
+    en: "Ready in less than 24 hours"
+  };
+  function updateDeliveryTime(){
+    const lang = (document.documentElement.lang || "nl").slice(0,2);
+    const value = copy[lang] || copy.nl;
+    document.querySelectorAll("li").forEach(item => {
+      const current = item.textContent.trim();
+      if (Object.values(copy).includes(current)) item.textContent = value;
+    });
+  }
+  document.addEventListener("DOMContentLoaded", updateDeliveryTime);
+  new MutationObserver(updateDeliveryTime).observe(document.documentElement,{attributes:true,attributeFilter:["lang"]});
+  document.addEventListener("click", () => setTimeout(updateDeliveryTime, 0));
+  updateDeliveryTime();
+})();
+</script>`;
+if (!h.includes('id="delivery-time-translations"')) h = h.replace("</body>", deliveryTimeTranslations + "</body>");
+
 fs.writeFileSync(file,h);
 console.log("FreelanceFlow homepage, portfolio, multilingual copy and lead form updated.");
