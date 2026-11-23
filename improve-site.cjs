@@ -70,10 +70,10 @@ const pricingPatch = `<script id="freelanceflow-pricing">
     }
     if (!section) return;
     let cards = Array.from(section.querySelectorAll(".pricing-card,.price-card,.pricing-plan,.plan-card,[class*='pricing'] article,[class*='price'] article,[class*='plan'] article,article,li,[class*='card'],[class*='plan'],[class*='tier']"))
-      .filter(el => /\b(basic|professional|premium)\b/i.test(el.innerText || "") && /€/.test(el.innerText || ""));
+      .filter(el => /\\b(basic|professional|premium)\\b/i.test(el.innerText || "") && /€/.test(el.innerText || ""));
     cards = cards.filter(el => !cards.some(other => other !== el && el.contains(other)));
     cards.sort((a,b) => {
-      const order = el => /\bbasic\b/i.test(el.innerText || "") ? 0 : /\bprofessional\b/i.test(el.innerText || "") ? 1 : /\bpremium\b/i.test(el.innerText || "") ? 2 : 3;
+      const order = el => /\\bbasic\\b/i.test(el.innerText || "") ? 0 : /\\bprofessional\\b/i.test(el.innerText || "") ? 1 : /\\bpremium\\b/i.test(el.innerText || "") ? 2 : 3;
       return order(a) - order(b);
     });
     cards = cards.slice(0,3);
