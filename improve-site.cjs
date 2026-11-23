@@ -49,59 +49,22 @@ const css=[
 ].join('\n');
 h=h.replace("</head>",css+"</head>");
 
-const pricingPatch = `<script id="freelanceflow-pricing">
-(function(){
-  function applyPricing(){
-    const section = Array.from(document.querySelectorAll("section")).find(s =>
-      /transparante prijzen/i.test(s.innerText || "") &&
-      (s.innerText.match(/€/g) || []).length >= 3
-    );
-    if (!section) return;
-    const cards = Array.from(section.querySelectorAll("article")).filter(card =>
-      /€/.test(card.innerText || "") &&
-      /(starter|business|premium)/i.test(card.innerText || "")
-    ).slice(0,3);
-    if (cards.length !== 3) return;
-    const prices = ["€39", "€299", "€399"];
-    const names = ["BASIC", "PROFESSIONAL", "PREMIUM"];
-    cards.forEach((card, index) => {
-      const label = card.querySelector("p");
-      if (label) label.textContent = names[index];
-      const walker = document.createTreeWalker(card, NodeFilter.SHOW_TEXT);
-      let node, changed = false;
-      while ((node = walker.nextNode())) {
-        if (!changed && /€\\s*[\d.,]+/.test(node.nodeValue || "")) {
-          node.nodeValue = node.nodeValue.replace(/€\\s*[\d.,]+/, prices[index]);
-          changed = true;
-        }
-      }
-      const seo = Array.from(card.querySelectorAll("li")).find(li => /basis seo|seo-basis|seo/i.test(li.textContent || ""));
-      if (seo) seo.textContent = "SEO inbegrepen";
-      else {
-        const li = document.createElement("li");
-        li.textContent = "SEO inbegrepen";
-        const list = card.querySelector("ul");
-        if (list) list.appendChild(li);
-      }
-      if (index === 0 && !card.querySelector(".ff-welcome-promo")) {
-        const tag = document.createElement("span");
-        tag.className = "ff-welcome-promo";
-        tag.textContent = "WELCOME PROMOTION";
-        tag.style.cssText = "display:inline-block;margin:0 0 10px;padding:6px 10px;border-radius:99px;background:#d9f99d;color:#20331b;font-size:11px;font-weight:800;letter-spacing:.06em";
-        const title = card.querySelector("h3") || label;
-        if (title) title.insertAdjacentElement("beforebegin", tag);
-      }
-    });
-    section.querySelectorAll("article h3").forEach(h => {
-      if (/^starter$/i.test(h.textContent.trim())) h.textContent = "Basic";
-      if (/^business$/i.test(h.textContent.trim())) h.textContent = "Professional";
-    });
-  }
-  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", applyPricing);
-  else applyPricing();
-})();
-</script>`;
-h = h.replace("</body>", pricingPatch + "</body>");
+const pricingStart = h.indexOf("Transparante prijzen");
+const pricingEnd = h.indexOf("VRIJBLIJVEND KENNISMAKEN", pricingStart);
+if (pricingStart < 0 || pricingEnd < 0) {
+  throw new Error("Could not locate the pricing section in dist/index.html");
+}
+let pricingHtml = h.slice(pricingStart, pricingEnd);
+pricingHtml = pricingHtml.replace(/STARTER/g, "BASIC").replace(/BUSINESS/g, "PROFESSIONAL");
+const newPrices = ["€39", "€299", "€399"];
+let priceIndex = 0;
+pricingHtml = pricingHtml.replace(/€\\s*[\\d.,]+/g, () => newPrices[priceIndex++] || "€399");
+pricingHtml = pricingHtml.replace(/Basis SEO/g, "SEO inbegrepen");
+pricingHtml = pricingHtml.replace(/SEO-basis &amp; optimalisatie/g, "SEO inbegrepen &amp; optimalisatie");
+pricingHtml = pricingHtml.replace(/(<article\\b[^>]*>[\\s\\S]*?)(<h3\\b)/, '$1<span class="ff-welcome-promo" style="display:inline-block;margin:0 0 10px;padding:6px 10px;border-radius:99px;background:#d9f99d;color:#20331b;font-size:11px;font-weight:800;letter-spacing:.06em">WELCOME PROMOTION</span>$2');
+h = h.slice(0, pricingStart) + pricingHtml + h.slice(pricingEnd);
+
+
 
 fs.writeFileSync(file,h);
 console.log("FreelanceFlow homepage, portfolio, multilingual copy and lead form updated.");
