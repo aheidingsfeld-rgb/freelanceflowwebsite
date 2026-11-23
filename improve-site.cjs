@@ -58,10 +58,10 @@ let pricingHtml = h.slice(pricingStart, pricingEnd);
 pricingHtml = pricingHtml.replace(/STARTER/g, "BASIC").replace(/BUSINESS/g, "PROFESSIONAL");
 const newPrices = ["€39", "€299", "€399"];
 let priceIndex = 0;
-pricingHtml = pricingHtml.replace(/€\\s*[\\d.,]+/g, () => newPrices[priceIndex++] || "€399");
+pricingHtml = pricingHtml.replace(/€\s*[\d.,]+/g, () => newPrices[priceIndex++] || "€399");
 pricingHtml = pricingHtml.replace(/Basis SEO/g, "SEO inbegrepen");
 pricingHtml = pricingHtml.replace(/SEO-basis &amp; optimalisatie/g, "SEO inbegrepen &amp; optimalisatie");
-pricingHtml = pricingHtml.replace(/(<article\\b[^>]*>[\\s\\S]*?)(<h3\\b)/, '$1<span class="ff-welcome-promo" style="display:inline-block;margin:0 0 10px;padding:6px 10px;border-radius:99px;background:#d9f99d;color:#20331b;font-size:11px;font-weight:800;letter-spacing:.06em">WELCOME PROMOTION</span>$2');
+pricingHtml = pricingHtml.replace(/(<article\b[^>]*>[\s\S]*?)(<h3\b)/, '$1<span class="ff-welcome-promo" style="display:inline-block;margin:0 0 10px;padding:6px 10px;border-radius:99px;background:#d9f99d;color:#20331b;font-size:11px;font-weight:800;letter-spacing:.06em">WELCOME PROMOTION</span>$2');
 h = h.slice(0, pricingStart) + pricingHtml + h.slice(pricingEnd);
 
 
