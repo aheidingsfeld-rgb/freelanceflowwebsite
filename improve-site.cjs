@@ -62,5 +62,35 @@ h = h.replace(/<ul\b([^>]*)>([\s\S]*?)<\/ul>/g, (whole, attrs, items) => {
 
 
 
+// Keep the industry dropdown translated when visitors switch the site language.
+const industryLanguageScript = `<script id="industry-dropdown-translations">
+(function(){
+  const copy = {
+    nl: { label:"In welke sector ben je actief?", options:["Tandarts","Bouw / vakman","Installateur / elektricien","Andere zelfstandige","Andere"] },
+    fr: { label:"Dans quel secteur travaillez-vous ?", options:["Dentiste","Construction / artisan","Installateur / électricien","Autre indépendant","Autre"] },
+    en: { label:"Which industry are you in?", options:["Dentist","Construction / tradesperson","Installer / electrician","Other self-employed professional","Other"] }
+  };
+  function updateIndustryOptions(){
+    const lang = (document.documentElement.lang || "nl").slice(0,2);
+    const chosen = copy[lang] || copy.nl;
+    document.querySelectorAll("select").forEach(select => {
+      const options = Array.from(select.options);
+      const isIndustry = options.some(option => /^(Tandarts|Dentist|Dentiste)$/.test(option.textContent.trim()));
+      if (!isIndustry) return;
+      const label = select.labels && select.labels[0] || select.previousElementSibling;
+      if (label) label.textContent = chosen.label;
+      options.forEach((option,index) => {
+        if (chosen.options[index]) option.textContent = chosen.options[index];
+      });
+    });
+  }
+  document.addEventListener("DOMContentLoaded", updateIndustryOptions);
+  document.addEventListener("click", () => setTimeout(updateIndustryOptions, 0));
+  new MutationObserver(updateIndustryOptions).observe(document.documentElement,{attributes:true,attributeFilter:["lang"]});
+  updateIndustryOptions();
+})();
+</script>`;
+if (!h.includes('id="industry-dropdown-translations"')) h = h.replace("</body>", industryLanguageScript + "</body>");
+
 fs.writeFileSync(file,h);
 console.log("FreelanceFlow homepage, portfolio, multilingual copy and lead form updated.");
