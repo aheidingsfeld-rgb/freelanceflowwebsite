@@ -49,8 +49,8 @@ const css=[
 ].join('\n');
 h=h.replace("</head>",css+"</head>");
 
-const pricingStart = h.indexOf('<p>Transparante prijzen</p>');
-const pricingEnd = h.indexOf('<p>VRIJBLIJVEND KENNISMAKEN</p>', pricingStart);
+const pricingStart = h.lastIndexOf('Transparante prijzen');
+const pricingEnd = h.indexOf('VRIJBLIJVEND KENNISMAKEN', pricingStart);
 if (pricingStart < 0 || pricingEnd < 0) {
   throw new Error("Could not locate the exact pricing section in dist/index.html");
 }
