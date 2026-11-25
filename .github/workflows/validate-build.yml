@@ -1,0 +1,25 @@
+name: Validate FreelanceFlow build
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Build static website
+        run: npm run build
+      - name: Verify all localized portfolio pages
+        run: |
+          for language in fr en; do
+            for sector in tandarts loodgieter elektricien dakwerker schilder tuinman; do
+              test -s "dist/$language/$sector/index.html"
+            done
+          done
+          test -s dist/tandarts/index.html
+          test -s dist/robots.txt
+          test -s dist/sitemap.xml
