@@ -220,6 +220,19 @@ if (!h.includes('id="freelanceflow-web3forms"')) h = h.replace("</body>", web3fo
 
 const languageBridge = "<script id=\"freelanceflow-language-bridge\">\n(function(){\n const supported=[\"nl\",\"fr\",\"en\"], slugs=[\"dakwerker\",\"elektricien\",\"loodgieter\",\"schilder\",\"tandarts\",\"tuinman\"];\n function readLanguage(){\n  const q=new URLSearchParams(location.search).get(\"lang\");\n  if(supported.includes(q))return q;\n  try{const saved=localStorage.getItem(\"ff-lang\");if(supported.includes(saved))return saved}catch(e){}\n  const current=(document.documentElement.lang||\"\").slice(0,2).toLowerCase();\n  return supported.includes(current)?current:\"nl\";\n }\n function localizePortfolioLinks(lang){\n  document.querySelectorAll(\"a[href]\").forEach(function(link){\n   try{\n    const u=new URL(link.href,location.href);\n    if(u.origin!==location.origin)return;\n    const match=u.pathname.match(/^\\/(dakwerker|elektricien|loodgieter|schilder|tandarts|tuinman)\\/?$/);\n    if(!match)return;\n    const slug=match[1];\n    u.pathname=lang===\"nl\"?\"/\"+slug+\"/\":\"/\"+lang+\"/\"+slug+\"/\";\n    u.search=\"\";\n    link.href=u.pathname+u.hash;\n   }catch(e){}\n  });\n }\n function saveLanguage(lang){\n  if(!supported.includes(lang))return;\n  document.documentElement.lang=lang;\n  try{localStorage.setItem(\"ff-lang\",lang)}catch(e){}\n  localizePortfolioLinks(lang);\n }\n document.addEventListener(\"click\",function(event){\n  const control=event.target.closest(\"[data-lang],[data-language]\");\n  if(!control)return;\n  const lang=(control.getAttribute(\"data-lang\")||control.getAttribute(\"data-language\")||\"\").slice(0,2).toLowerCase();\n  if(supported.includes(lang))setTimeout(function(){saveLanguage(lang)},0);\n },true);\n new MutationObserver(function(){saveLanguage(readLanguage())}).observe(document.documentElement,{attributes:true,attributeFilter:[\"lang\"]});\n document.addEventListener(\"DOMContentLoaded\",function(){saveLanguage(readLanguage())});\n window.addEventListener(\"pageshow\",function(){saveLanguage(readLanguage())});\n saveLanguage(readLanguage());\n})();\n</script>";
 if (!h.includes('id="freelanceflow-language-bridge"')) h = h.replace("</body>", languageBridge + "</body>");
+// Remove the stale redirect-based success notice. A message must only appear after a confirmed form response.
+h = h.replace(/<div class="form-success" id="formSuccess"[\\s\\S]*?<\\/div>/i, "");
+h = h.replace(/<script>if\\(new URLSearchParams\\(location\\.search\\)\\.get\\('verzonden'\\)==='1'\\)[\\s\\S]*?<\\/script>/i, "");
+h = h.replace(/<input type="hidden" name="_next" value="[^"]*">/g, "");
+// Defer portfolio images so remote image hosts do not delay the initial page render.
+h = h.replace(/<img\\b[^>]*>/gi, tag => {
+  if (!/\\bloading\\s*=/.test(tag)) tag = tag.replace(/<img\\b/i, '<img loading="lazy"');
+  if (!/\\bdecoding\\s*=/.test(tag)) tag = tag.replace(/<img\\b/i, '<img decoding="async"');
+  if (!/\\bfetchpriority\\s*=/.test(tag)) tag = tag.replace(/<img\\b/i, '<img fetchpriority="low"');
+  return tag;
+});
+const imagePerfCss = '<style id="freelanceflow-image-performance">img{max-width:100%;height:auto}picture{display:block}</style>';
+if (!h.includes('id="freelanceflow-image-performance"')) h = h.replace("</head>", imagePerfCss + "</head>");
 fs.writeFileSync(file,h);
 
 console.log("FreelanceFlow homepage, portfolio, multilingual copy and lead form updated.");
