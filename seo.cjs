@@ -27,8 +27,8 @@ for (const file of walk(ROOT)) {
   const slug = rel === "." ? "index" : rel.split("/").pop().toLowerCase();
   const fallback = [slug.replace(/[-_]/g, " ").replace(/\b\w/g, c => c.toUpperCase()) + " | FreelanceFlow", "Ontdek professionele websites op maat voor zelfstandigen en kleine ondernemingen in België. FreelanceFlow helpt je zaak online sterker presenteren."];
   const currentHtml = fs.readFileSync(file, "utf8");
-  const isLocalePage = /^(fr|en)\\//.test(rel);
-  const localeTitle = currentHtml.match(/<title[^>]*>([\\s\\S]*?)<\\/title>/i);
+  const isLocalePage = /^(fr|en)\//.test(rel);
+  const localeTitle = currentHtml.match(/<title[^>]*>([\s\S]*?)<\/title>/i);
   const localeDescription = currentHtml.match(/<meta[^>]*name=["']description["'][^>]*content=["']([^"']*)["'][^>]*>/i);
   const info = isLocalePage && localeTitle ? [localeTitle[1], localeDescription ? localeDescription[1] : "FreelanceFlow website concept"] : (pages[slug] || fallback);
   const url = rel === "." ? SITE + "/" : SITE + "/" + rel + "/";
