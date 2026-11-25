@@ -219,4 +219,36 @@ const web3formsIntegration = `<script id="freelanceflow-web3forms">
 if (!h.includes('id="freelanceflow-web3forms"')) h = h.replace("</body>", web3formsIntegration + "</body>");
 
 fs.writeFileSync(file,h);
+
+const livePortfolioPreviews = `<style id="live-portfolio-preview-style">
+.portfolio-preview{position:relative;overflow:hidden;isolation:isolate}
+.portfolio-preview .portfolio-photo{display:none!important}
+.portfolio-preview .ff-live-preview{display:block;width:100%;height:100%;min-height:250px;border:0;background:#f4f5f2;pointer-events:none;transform:scale(1);transform-origin:top left}
+.portfolio-preview:has(.ff-live-preview){background:#eef1ed}
+@media(max-width:700px){.portfolio-preview .ff-live-preview{min-height:220px}}
+</style>
+<script id="live-portfolio-previews">
+(function(){
+ const slugs=["tandarts","loodgieter","elektricien","dakwerker","schilder","tuinman"];
+ function language(){const l=(document.documentElement.lang||"nl").toLowerCase().slice(0,2);return ["nl","fr","en"].includes(l)?l:"nl";}
+ function install(){
+  const previews=[...document.querySelectorAll(".portfolio-preview")];
+  previews.forEach((box,i)=>{
+   if(box.querySelector(".ff-live-preview"))return;
+   const slug=slugs[i];if(!slug)return;
+   const frame=document.createElement("iframe");
+   frame.className="ff-live-preview";frame.title="Website concept "+slug;
+   frame.loading=i<3?"eager":"lazy";frame.setAttribute("aria-label","Live websitevoorbeeld");
+   frame.src="/"+slug+"/?lang="+language();
+   box.querySelectorAll("img,.portfolio-photo").forEach(el=>{if(el.tagName==="IMG")el.remove();else el.style.display="none";});
+   box.appendChild(frame);
+  });
+ }
+ install();
+ const observer=new MutationObserver(()=>{const lang=language();document.querySelectorAll(".ff-live-preview").forEach(frame=>{const next="/"+frame.src.split("/").filter(Boolean).slice(-2,-1)[0]+"/?lang="+lang;if(!frame.src.includes("?lang="+lang))frame.src=next;});});
+ observer.observe(document.documentElement,{attributes:true,attributeFilter:["lang"]});
+})();
+</script>`;
+if (!h.includes('id="live-portfolio-previews"')) h = h.replace("</body>", livePortfolioPreviews + "</body>");
+
 console.log("FreelanceFlow homepage, portfolio, multilingual copy and lead form updated.");
