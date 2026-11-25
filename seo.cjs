@@ -1,7 +1,7 @@
 const fs = require("fs");
 const path = require("path");
 const ROOT = path.resolve("dist");
-const SITE = "https://freelanceflow.be";
+const SITE = "https://freelanceflow.eu";
 if (!fs.existsSync(ROOT)) throw new Error("dist directory not found");
 const pages = {
   index: ["Website laten maken voor zelfstandigen in België | FreelanceFlow", "FreelanceFlow maakt professionele, snelle websites voor Belgische zelfstandigen en kleine ondernemingen. Ontdek webdesign op maat voor jouw zaak."],
