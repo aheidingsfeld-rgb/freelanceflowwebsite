@@ -179,10 +179,11 @@ const extraAttr={
 "Een frisse website met tuinonderhoud, realisaties, diensten en contact voor een vrijblijvende offerte.":["Un site frais présentant l’entretien des jardins, les réalisations, les services et un devis sans engagement.","A fresh website featuring garden maintenance, completed projects, services and a no-obligation quote."]
 };
 for(const page of pages){
- const file=path.join(__dirname,"dist",page,"index.html");if(!fs.existsSync(file))continue;
+ function findPage(dir,name){if(!fs.existsSync(dir))return null;for(const entry of fs.readdirSync(dir,{withFileTypes:true})){const full=path.join(dir,entry.name);if(entry.isDirectory()){if(entry.name.toLowerCase()===name.toLowerCase()&&fs.existsSync(path.join(full,"index.html")))return path.join(full,"index.html");const nested=findPage(full,name);if(nested)return nested;}}return null;}
+ const file=findPage(path.join(__dirname,"dist"),page);if(!file){console.warn("Concept page not found:",page);continue;}
  let html=fs.readFileSync(file,"utf8");
  const switcher='<div class="language-switch" id="conceptLanguageSwitch" role="group" aria-label="Choose language"><button type="button" data-lang="nl" aria-label="Nederlands">NL</button><button type="button" data-lang="fr" aria-label="Français">FR</button><button type="button" data-lang="en" aria-label="English">EN</button></div>';
- if(!html.includes('id="conceptLanguageSwitch"'))html=html.replace("</nav></header>","</nav>"+switcher+"</header>");
+ if(!html.includes('id="conceptLanguageSwitch"')){if(html.includes("</nav>"))html=html.replace("</nav>","</nav>"+switcher);else if(html.includes("</header>"))html=html.replace("</header>",switcher+"</header>");}
  const style='<style id="concept-language-style">.language-switch{display:flex;align-items:center;gap:4px;padding:4px;background:#151b19;border:1px solid #39443d;border-radius:9px;flex-shrink:0}.language-switch button{border:0;background:transparent;color:#c4cdc5;border-radius:6px;padding:8px 10px;font:700 .8rem Inter,Arial,sans-serif;cursor:pointer}.language-switch button.active{background:var(--accent);color:#11170d}.top{gap:16px}.top .nav{flex-wrap:wrap;justify-content:flex-end}@media(max-width:760px){.top{align-items:flex-start;flex-wrap:wrap}.top .nav{gap:10px;font-size:.82rem}.language-switch{margin-left:auto}}</style>';
  if(!html.includes('id="concept-language-style"'))html=html.replace("</head>",style+"</head>");
  Object.assign(attr,extraAttr);
