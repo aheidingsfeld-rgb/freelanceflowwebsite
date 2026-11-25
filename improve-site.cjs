@@ -224,14 +224,22 @@ if (!h.includes('id="freelanceflow-language-bridge"')) h = h.replace("</body>", 
 h = h.replace(/<div class="form-success" id="formSuccess"[\s\S]*?<\/div>/i, "");
 h = h.replace(/<script>if\(new URLSearchParams\(location\.search\)\.get\('verzonden'\)==='1'\)[\s\S]*?<\/script>/i, "");
 h = h.replace(/<input type="hidden" name="_next" value="[^"]*">/g, "");
-// Defer portfolio images so remote image hosts do not delay the initial page render.
+// Load portfolio images reliably: request all six immediately rather than leaving
+// off-screen cards dependent on native lazy-load thresholds. Decode asynchronously
+// so image decoding does not block text and layout. Avoid sending the site referrer
+// to third-party image hosts that may reject hotlinked assets.
+let imageIndex = 0;
 h = h.replace(/<img\b[^>]*>/gi, tag => {
-  if (!/\bloading\s*=/.test(tag)) tag = tag.replace(/<img\b/i, '<img loading="lazy"');
+  imageIndex++;
+  tag = tag.replace(/\sloading=(["']).*?\1/ig, '').replace(/\sfetchpriority=(["']).*?\1/ig, '');
+  tag = tag.replace(/\sreferrerpolicy=(["']).*?\1/ig, '');
   if (!/\bdecoding\s*=/.test(tag)) tag = tag.replace(/<img\b/i, '<img decoding="async"');
-  if (!/\bfetchpriority\s*=/.test(tag)) tag = tag.replace(/<img\b/i, '<img fetchpriority="low"');
+  tag = tag.replace(/<img\b/i, '<img loading="eager"');
+  tag = tag.replace(/<img\b/i, '<img fetchpriority="' + (imageIndex === 1 ? 'high' : 'auto') + '"');
+  tag = tag.replace(/<img\b/i, '<img referrerpolicy="no-referrer"');
   return tag;
 });
-const imagePerfCss = '<style id="freelanceflow-image-performance">img{max-width:100%;height:auto}picture{display:block}</style>';
+const imagePerfCss = '<style id="freelanceflow-image-performance">img{max-width:100%;height:auto}picture{display:block}img[loading="eager"]{content-visibility:visible}</style>';
 if (!h.includes('id="freelanceflow-image-performance"')) h = h.replace("</head>", imagePerfCss + "</head>");
 fs.writeFileSync(file,h);
 
