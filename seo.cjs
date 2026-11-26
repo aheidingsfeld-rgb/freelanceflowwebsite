@@ -90,6 +90,13 @@ for (const file of walk(ROOT)) {
   const slug = parts.length === 0 ? "index" : (["fr", "en"].includes(parts[0]) ? parts[1] : parts[0]);
   const url = SITE + localePath(lang, slug);
   let html = fs.readFileSync(file, "utf8");
+  // Keep the local landing page consistent with the live package prices.
+  if (slug === "website-laten-maken-halle") {
+    html = html.replace(
+      "Onze pakketten starten vanaf €299.",
+      "Onze websitepakketten starten vanaf €39: Basic vanaf €39, Professional vanaf €199 en Premium vanaf €299."
+    );
+  }
   const existingTitle = html.match(/<title\b[^>]*>([\s\S]*?)<\/title>/i);
   const existingDescription = html.match(/<meta\b[^>]*name=["']description["'][^>]*content=["']([^"']*)["'][^>]*>/i);
   const fallbackTitle = existingTitle ? existingTitle[1].replace(/<[^>]+>/g, "").trim() : (slug.replace(/[-_]/g, " ") + " | FreelanceFlow");
