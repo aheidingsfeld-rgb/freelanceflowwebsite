@@ -241,6 +241,8 @@ h = h.replace(/<img\b[^>]*>/gi, tag => {
 });
 const imagePerfCss = '<style id="freelanceflow-image-performance">img{max-width:100%;height:auto}picture{display:block}img[loading="eager"]{content-visibility:visible}</style>';
 if (!h.includes('id="freelanceflow-image-performance"')) h = h.replace("</head>", imagePerfCss + "</head>");
+// Use the new official FreelanceFlow contact address in visible text and mailto links.
+h = h.replaceAll("heidings.consulting@gmail.com", "info@freelanceflow.eu");
 fs.writeFileSync(file,h);
 
 console.log("FreelanceFlow homepage, portfolio, multilingual copy and lead form updated.");
