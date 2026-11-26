@@ -82,8 +82,8 @@ for (const file of walk(ROOT)) {
   const slug = parts.length === 0 ? "index" : (["fr", "en"].includes(parts[0]) ? parts[1] : parts[0]);
   const url = SITE + localePath(lang, slug);
   let html = fs.readFileSync(file, "utf8");
-  const existingTitle = html.match(/<title\\b[^>]*>([\\s\\S]*?)<\\/title>/i);
-  const existingDescription = html.match(/<meta\\b[^>]*name=["\x27]description["\x27][^>]*content=["\x27]([^"\x27]*)["\x27][^>]*>/i);
+  const existingTitle = html.match(/<title\b[^>]*>([\s\S]*?)<\/title>/i);
+  const existingDescription = html.match(/<meta\b[^>]*name=["']description["'][^>]*content=["']([^"']*)["'][^>]*>/i);
   const fallbackTitle = existingTitle ? existingTitle[1].replace(/<[^>]+>/g, "").trim() : (slug.replace(/[-_]/g, " ") + " | FreelanceFlow");
   const fallbackDescription = existingDescription ? existingDescription[1] : "Ontdek professionele websites en webdesign op maat voor zelfstandigen en kleine ondernemingen. FreelanceFlow helpt bedrijven online sterker zichtbaar te worden.";
   const info = slug === "index" ? home.nl : ((industries[slug] && industries[slug][lang]) || [fallbackTitle, fallbackDescription]);
