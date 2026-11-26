@@ -65,6 +65,7 @@ function localePath(lang, slug) {
 }
 function alternates(slug) {
   if (slug === "index") return [{ lang: "x-default", url: SITE + "/" }];
+  if (!industries[slug]) return [];
   return [
     { lang: "nl-BE", url: SITE + localePath("nl", slug) },
     { lang: "fr-BE", url: SITE + localePath("fr", slug) },
@@ -80,10 +81,12 @@ for (const file of walk(ROOT)) {
   const lang = ["fr", "en"].includes(parts[0]) ? parts[0] : "nl";
   const slug = parts.length === 0 ? "index" : (["fr", "en"].includes(parts[0]) ? parts[1] : parts[0]);
   const url = SITE + localePath(lang, slug);
-  const info = slug === "index" ? home.nl : (industries[slug] && industries[slug][lang]);
-  if (!info) throw new Error("Missing SEO metadata for " + rel);
-
   let html = fs.readFileSync(file, "utf8");
+  const existingTitle = html.match(/<title\\b[^>]*>([\\s\\S]*?)<\\/title>/i);
+  const existingDescription = html.match(/<meta\\b[^>]*name=["\x27]description["\x27][^>]*content=["\x27]([^"\x27]*)["\x27][^>]*>/i);
+  const fallbackTitle = existingTitle ? existingTitle[1].replace(/<[^>]+>/g, "").trim() : (slug.replace(/[-_]/g, " ") + " | FreelanceFlow");
+  const fallbackDescription = existingDescription ? existingDescription[1] : "Ontdek professionele websites en webdesign op maat voor zelfstandigen en kleine ondernemingen. FreelanceFlow helpt bedrijven online sterker zichtbaar te worden.";
+  const info = slug === "index" ? home.nl : ((industries[slug] && industries[slug][lang]) || [fallbackTitle, fallbackDescription]);
   const head = /<head\b[^>]*>/i.exec(html);
   if (!head) throw new Error("No <head> found in " + file);
 
