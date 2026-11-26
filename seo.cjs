@@ -42,6 +42,14 @@ const home = {
   nl: ["Website laten maken in België | FreelanceFlow", "FreelanceFlow bouwt professionele websites voor zelfstandigen en kleine bedrijven in België. Ontdek webdesign op maat, SEO en gratis websiteconcepten."]
 };
 
+const landingPages = {
+  "over-ons": ["Over FreelanceFlow | Webdesign voor zelfstandigen", "Leer hoe FreelanceFlow zelfstandigen en kleine bedrijven in België helpt met professioneel webdesign, duidelijke afspraken en websites op maat."],
+  "webdesign-vlaams-brabant": ["Webdesign in Vlaams-Brabant | FreelanceFlow", "Op zoek naar webdesign in Vlaams-Brabant? FreelanceFlow maakt duidelijke, professionele websites voor zelfstandigen en kleine ondernemingen in Halle en omgeving."],
+  "website-laten-maken-halle": ["Website laten maken in Halle | FreelanceFlow", "Een website laten maken in Halle? FreelanceFlow helpt lokale zelfstandigen en kleine bedrijven met webdesign op maat, mobiele websites en SEO-basis."],
+  "website-voor-tandartsen": ["Website voor tandartsen | FreelanceFlow", "Een professionele website voor je tandartspraktijk. Presenteer behandelingen, openingsuren en contactgegevens en maak afspraakaanvragen eenvoudiger."],
+  "website-voor-vakmannen": ["Website voor vakmannen | FreelanceFlow", "Laat je diensten en realisaties professioneel zien. FreelanceFlow maakt websites voor vakmannen, installateurs en lokale zelfstandigen in België."]
+};
+
 const localeInfo = {
   nl: { html: "nl-BE", og: "nl_BE" },
   fr: { html: "fr-BE", og: "fr_BE" },
@@ -64,7 +72,7 @@ function localePath(lang, slug) {
   return lang === "nl" ? "/" + slug + "/" : "/" + lang + "/" + slug + "/";
 }
 function alternates(slug) {
-  if (slug === "index") return [{ lang: "x-default", url: SITE + "/" }];
+  if (slug === "index") return [{ lang: "nl-BE", url: SITE + "/" }, { lang: "x-default", url: SITE + "/" }];
   if (!industries[slug]) return [];
   return [
     { lang: "nl-BE", url: SITE + localePath("nl", slug) },
@@ -86,7 +94,7 @@ for (const file of walk(ROOT)) {
   const existingDescription = html.match(/<meta\b[^>]*name=["']description["'][^>]*content=["']([^"']*)["'][^>]*>/i);
   const fallbackTitle = existingTitle ? existingTitle[1].replace(/<[^>]+>/g, "").trim() : (slug.replace(/[-_]/g, " ") + " | FreelanceFlow");
   const fallbackDescription = existingDescription ? existingDescription[1] : "Ontdek professionele websites en webdesign op maat voor zelfstandigen en kleine ondernemingen. FreelanceFlow helpt bedrijven online sterker zichtbaar te worden.";
-  const info = slug === "index" ? home.nl : ((industries[slug] && industries[slug][lang]) || [fallbackTitle, fallbackDescription]);
+  const info = slug === "index" ? home.nl : ((industries[slug] && industries[slug][lang]) || landingPages[slug] || [fallbackTitle, fallbackDescription]);
   const head = /<head\b[^>]*>/i.exec(html);
   if (!head) throw new Error("No <head> found in " + file);
 
@@ -163,7 +171,7 @@ for (const file of walk(ROOT)) {
 }
 
 const sitemapEntries = urls.map(entry => {
-  const alternatesForPage = alternates(entry.slug).filter(item => item.lang !== "x-default")
+  const alternatesForPage = alternates(entry.slug)
     .map(item => '    <xhtml:link rel="alternate" hreflang="' + item.lang + '" href="' + item.url + '"/>').join("\n");
   return "  <url>\n    <loc>" + entry.url + "</loc>\n" + alternatesForPage + "\n  </url>";
 });
