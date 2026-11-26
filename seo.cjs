@@ -76,7 +76,7 @@ function alternates(slug) {
 const urls = [];
 for (const file of walk(ROOT)) {
   const rel = path.relative(ROOT, path.dirname(file)).split(path.sep).join("/");
-  const parts = rel === "." ? [] : rel.split("/");
+  const parts = rel === "" || rel === "." ? [] : rel.split("/");
   const lang = ["fr", "en"].includes(parts[0]) ? parts[0] : "nl";
   const slug = parts.length === 0 ? "index" : (["fr", "en"].includes(parts[0]) ? parts[1] : parts[0]);
   const url = SITE + localePath(lang, slug);
