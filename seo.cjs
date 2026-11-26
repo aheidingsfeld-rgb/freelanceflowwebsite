@@ -141,6 +141,8 @@ for (const file of walk(ROOT)) {
     '<meta name="googlebot" content="index,follow">',
     '<meta name="author" content="FreelanceFlow">',
     '<meta name="theme-color" content="#17251d">',
+    '<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 64 64%22%3E%3Crect width=%2264%22 height=%2264%22 rx=%2215%22 fill=%22%23b7f51b%22/%3E%3Cpath d=%22M43 17H27c-8 0-13 5-13 13v4c0 8 5 13 13 13h8V36H27v-5c0-2 1-3 3-3h13z%22 fill=%22%23101510%22/%3E%3C/svg%3E">',
+    '<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 64 64%22%3E%3Crect width=%2264%22 height=%2264%22 rx=%2215%22 fill=%22%23b7f51b%22/%3E%3Cpath d=%22M43 17H27c-8 0-13 5-13 13v4c0 8 5 13 13 13h8V36H27v-5c0-2 1-3 3-3h13z%22 fill=%22%23101510%22/%3E%3C/svg%3E">',
     '<link rel="canonical" href="' + url + '">',
     alternateTags,
     '<meta property="og:type" content="website">',
