@@ -2,18 +2,26 @@ const fs = require("fs");
 const path = require("path");
 const file = path.join("dist", "index.html");
 let html = fs.readFileSync(file, "utf8");
-const logo = '<a class="ff-brand-logo" href="/" aria-label="FreelanceFlow home"><svg viewBox="0 0 36 36" aria-hidden="true"><path d="M5 17C7 8 13 3 24 3h7c-2 7-7 11-15 11H5Z" fill="#b7f51b"/><path d="M5 20h24c-2 7-7 10-15 10H5Z" fill="#b7f51b" opacity=".82"/></svg><span>freelance<span>flow</span><i>.</i></span></a>';
-const style = '<style id="freelanceflow-brand-logo">.ff-brand-logo{display:inline-flex!important;align-items:center;gap:9px;color:#f7f8f5!important;text-decoration:none!important;font-weight:800!important;letter-spacing:-.055em;font-size:20px;line-height:1;white-space:nowrap}.ff-brand-logo svg{width:29px;height:29px;flex:none}.ff-brand-logo>span>span,.ff-brand-logo i{color:#b7f51b;font-style:normal}.ff-brand-logo:hover{opacity:.88}.ff-brand-logo:focus-visible{outline:2px solid #b7f51b;outline-offset:5px}@media(max-width:600px){.ff-brand-logo{font-size:18px;gap:7px}.ff-brand-logo svg{width:25px;height:25px}}</style>';
+
+const logo = '<a class="ff-brand-logo" href="/" aria-label="FreelanceFlow home"><span class="ff-brand-symbol" aria-hidden="true">F</span><span class="ff-brand-word">freelance<span>flow</span><i>.</i></span></a>';
+const style = '<style id="freelanceflow-brand-logo">.ff-brand-logo{display:inline-flex!important;align-items:center!important;gap:8px!important;color:#fff!important;text-decoration:none!important;font:800 19px/1 system-ui,sans-serif!important;letter-spacing:-.7px!important;white-space:nowrap!important;position:relative!important;z-index:9999!important}.ff-brand-symbol{display:inline-flex;align-items:center;justify-content:center;width:27px;height:27px;border-radius:8px;background:#b7f51b;color:#101510;font-size:18px;font-weight:900;letter-spacing:-1px}.ff-brand-word>span,.ff-brand-word>i{color:#b7f51b;font-style:normal}.ff-brand-logo:hover{opacity:.88}@media(max-width:600px){.ff-brand-logo{font-size:17px!important;gap:7px!important}.ff-brand-symbol{width:24px;height:24px}}</style>';
+
 if (!html.includes('class="ff-brand-logo"')) {
-  const navStart = html.indexOf("<nav");
-  const navEnd = navStart < 0 ? -1 : html.indexOf("</nav>", navStart);
-  if (navStart >= 0 && navEnd > navStart) {
-    const nav = html.slice(navStart, navEnd);
-    const match = nav.match(/<a\b[^>]*>[\s\S]*?(?:FreelanceFlow|freelanceflow)[\s\S]*?<\/a>/i);
-    if (match) html = html.slice(0, navStart) + nav.replace(match[0], logo) + html.slice(navEnd);
-    else html = html.slice(0, navEnd) + logo + html.slice(navEnd);
+  const headerMatch = html.match(/<header\\b[^>]*>/i);
+  const navMatch = html.match(/<nav\\b[^>]*>/i);
+  const insertion = headerMatch || navMatch;
+  if (insertion) {
+    const pos = html.indexOf(insertion[0]) + insertion[0].length;
+    html = html.slice(0, pos) + logo + html.slice(pos);
+  } else {
+    const bodyMatch = html.match(/<body\\b[^>]*>/i);
+    if (!bodyMatch) throw new Error("Cannot locate header, navigation or body to insert FreelanceFlow logo");
+    const pos = html.indexOf(bodyMatch[0]) + bodyMatch[0].length;
+    html = html.slice(0, pos) + '<div class="ff-brand-fallback">' + logo + '</div>' + html.slice(pos);
+    html = html.replace('</head>', '<style>.ff-brand-fallback{position:absolute;top:18px;left:24px;z-index:99999}</style>' + '</head>');
   }
-  html = html.replace("</head>", style + "</head>");
+  html = html.replace('</head>', style + '</head>');
 }
+if (!html.includes('class="ff-brand-logo"')) throw new Error("FreelanceFlow logo insertion failed");
 fs.writeFileSync(file, html);
-console.log("FreelanceFlow logo added to the homepage navigation.");
+console.log("Verified: FreelanceFlow white/lime logo inserted into homepage.");
