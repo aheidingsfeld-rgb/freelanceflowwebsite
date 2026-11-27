@@ -327,3 +327,6 @@ new MutationObserver(updateChatbotLanguage).observe(document.documentElement,{at
 updateChatbotLanguage();
 </script>`;
 if(!h.includes('id="chatbot-services-translations"')) h=h.replace("</body>",chatbotLanguageScript+"</body>");
+
+// Final write includes the chatbot section and language translations.
+fs.writeFileSync(file,h);
