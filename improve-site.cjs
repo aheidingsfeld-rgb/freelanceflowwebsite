@@ -317,7 +317,7 @@ function updateChatbotLanguage(){
 }
 if(!h.includes('id="chatbot-services"')){
  // Place the chatbot offer directly after the core services section and before the free-concept section.
- const anchor = /<section\b[^>]*>(?:(?!<\/section>)[\s\S])*?GRATIS &amp; VRIJBLIJVEND/;
+ const anchor = /<section\b[^>]*>(?:(?!<\/section>)[\s\S])*?GRATIS/;
  const match = h.match(anchor);
  if(!match) throw new Error("Could not find the free website concept section for chatbot placement");
  h = h.slice(0, match.index) + chatbotSection + h.slice(match.index);
