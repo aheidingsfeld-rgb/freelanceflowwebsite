@@ -320,7 +320,7 @@ if(!h.includes('id="chatbot-services"')){
  if(!h.includes("</main>")) throw new Error("Could not find </main> to insert chatbot section");
 }
 const chatbotLanguageScript = `<script id="chatbot-services-translations">
-${chatbotTranslations.toString()}
+const chatbotTranslations = ${JSON.stringify(chatbotTranslations)};
 ${updateChatbotLanguage.toString()}
 document.addEventListener("DOMContentLoaded",updateChatbotLanguage);
 new MutationObserver(updateChatbotLanguage).observe(document.documentElement,{attributes:true,attributeFilter:["lang"]});
