@@ -246,3 +246,84 @@ h = h.replaceAll("heidings.consulting@gmail.com", "info@freelanceflow.eu");
 fs.writeFileSync(file,h);
 
 console.log("FreelanceFlow homepage, portfolio, multilingual copy and lead form updated.");
+
+
+// Affordable website chatbot offer, translated across Dutch, French and English.
+const chatbotSection = `
+<section id="chatbot-services" class="section chatbot-section" aria-labelledby="chatbot-title">
+  <div class="container">
+    <div class="section-heading">
+      <span class="eyebrow" data-chatbot="eyebrow">EXTRA DIENST</span>
+      <h2 id="chatbot-title" data-chatbot="title">Een slimme chatbot op je website.</h2>
+      <p data-chatbot="intro">Help bezoekers snel antwoorden vinden, ook wanneer je zelf even niet beschikbaar bent.</p>
+    </div>
+    <div class="chatbot-grid">
+      <article class="chatbot-card">
+        <span class="chatbot-tag" data-chatbot="basicTag">EENVOUDIG</span>
+        <h3 data-chatbot="basicTitle">FAQ-chatbot</h3>
+        <p class="chatbot-price">€19 <small data-chatbot="once">eenmalig</small></p>
+        <p data-chatbot="basicText">Beantwoordt veelgestelde vragen over je diensten, openingsuren en contactgegevens.</p>
+        <ul><li data-chatbot="basic1">Vaste antwoorden op veelgestelde vragen</li><li data-chatbot="basic2">In jouw huisstijl</li><li data-chatbot="basic3">Geschikt voor mobiel</li></ul>
+      </article>
+      <article class="chatbot-card chatbot-card-featured">
+        <span class="chatbot-tag" data-chatbot="popular">POPULAIR</span>
+        <h3 data-chatbot="aiTitle">AI-chatbot</h3>
+        <p class="chatbot-price">€39 <small data-chatbot="once">eenmalig</small></p>
+        <p data-chatbot="aiText">Een AI-chatbot die vragen beantwoordt op basis van de informatie over jouw bedrijf.</p>
+        <ul><li data-chatbot="ai1">Antwoorden op basis van jouw bedrijfsinfo</li><li data-chatbot="ai2">Nederlands, Frans en Engels</li><li data-chatbot="ai3">Aangepast aan je website</li></ul>
+      </article>
+      <article class="chatbot-card">
+        <span class="chatbot-tag" data-chatbot="extraTag">MEER AANVRAGEN</span>
+        <h3 data-chatbot="leadTitle">Chatbot met leads</h3>
+        <p class="chatbot-price">€59 <small data-chatbot="once">eenmalig</small></p>
+        <p data-chatbot="leadText">Laat bezoekers hun gegevens en vraag achter via de chatbot.</p>
+        <ul><li data-chatbot="lead1">Alles van de AI-chatbot</li><li data-chatbot="lead2">Naam, e-mail en bericht verzamelen</li><li data-chatbot="lead3">Gericht op nieuwe aanvragen</li></ul>
+      </article>
+    </div>
+    <p class="chatbot-note" data-chatbot="note">Prijzen zijn eenmalige installatiekosten. Eventuele externe AI-gebruikskosten of extra koppelingen worden vooraf besproken.</p>
+    <a class="btn chatbot-cta" href="#contact" data-chatbot="cta">Vraag je chatbot aan ↗</a>
+  </div>
+</section>
+<style id="chatbot-services-style">
+.chatbot-section{padding:90px 0;background:var(--surface,rgba(255,255,255,.025))}
+.chatbot-section .container{max-width:1180px;margin:0 auto;padding:0 24px}
+.chatbot-section .section-heading{max-width:680px;margin:0 0 34px}
+.chatbot-section .section-heading h2{max-width:620px}
+.chatbot-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}
+.chatbot-card{padding:26px;border:1px solid var(--line,rgba(255,255,255,.15));border-radius:16px;background:rgba(255,255,255,.025)}
+.chatbot-card-featured{border-color:#86a95c;box-shadow:0 0 0 1px #86a95c inset}
+.chatbot-tag{display:inline-block;font-size:10px;letter-spacing:.13em;font-weight:750;color:#9cbe70}
+.chatbot-card h3{margin:18px 0 8px;font-size:22px}
+.chatbot-price{font-size:38px;font-weight:750;letter-spacing:-.05em;margin:8px 0}
+.chatbot-price small{font-size:12px;font-weight:450;letter-spacing:0;color:var(--muted,#999)}
+.chatbot-card>p:not(.chatbot-price){min-height:64px;line-height:1.65;color:var(--muted,#aaa)}
+.chatbot-card ul{padding-left:19px;line-height:1.9}
+.chatbot-note{max-width:800px;margin:22px 0;color:var(--muted,#aaa);font-size:13px;line-height:1.6}
+.chatbot-cta{display:inline-flex;margin-top:8px}
+@media(max-width:800px){.chatbot-grid{grid-template-columns:1fr}.chatbot-card>p:not(.chatbot-price){min-height:0}.chatbot-section{padding:64px 0}}
+</style>`;
+const chatbotTranslations = {
+nl:{eyebrow:"EXTRA DIENST",title:"Een slimme chatbot op je website.",intro:"Help bezoekers snel antwoorden vinden, ook wanneer je zelf even niet beschikbaar bent.",basicTag:"EENVOUDIG",basicTitle:"FAQ-chatbot",once:"eenmalig",basicText:"Beantwoordt veelgestelde vragen over je diensten, openingsuren en contactgegevens.",basic1:"Vaste antwoorden op veelgestelde vragen",basic2:"In jouw huisstijl",basic3:"Geschikt voor mobiel",popular:"POPULAIR",aiTitle:"AI-chatbot",aiText:"Een AI-chatbot die vragen beantwoordt op basis van de informatie over jouw bedrijf.",ai1:"Antwoorden op basis van jouw bedrijfsinfo",ai2:"Nederlands, Frans en Engels",ai3:"Aangepast aan je website",extraTag:"MEER AANVRAGEN",leadTitle:"Chatbot met leads",leadText:"Laat bezoekers hun gegevens en vraag achter via de chatbot.",lead1:"Alles van de AI-chatbot",lead2:"Naam, e-mail en bericht verzamelen",lead3:"Gericht op nieuwe aanvragen",note:"Prijzen zijn eenmalige installatiekosten. Eventuele externe AI-gebruikskosten of extra koppelingen worden vooraf besproken.",cta:"Vraag je chatbot aan ↗"},
+fr:{eyebrow:"SERVICE COMPLÉMENTAIRE",title:"Un chatbot intelligent sur votre site.",intro:"Aidez vos visiteurs à trouver rapidement des réponses, même lorsque vous êtes indisponible.",basicTag:"ESSENTIEL",basicTitle:"Chatbot FAQ",once:"paiement unique",basicText:"Répond aux questions fréquentes sur vos services, horaires et coordonnées.",basic1:"Réponses prédéfinies aux questions fréquentes",basic2:"Adapté à votre identité visuelle",basic3:"Compatible avec les mobiles",popular:"POPULAIRE",aiTitle:"Chatbot IA",aiText:"Un chatbot IA qui répond à partir des informations de votre entreprise.",ai1:"Réponses basées sur les informations de votre entreprise",ai2:"Néerlandais, français et anglais",ai3:"Adapté à votre site web",extraTag:"PLUS DE DEMANDES",leadTitle:"Chatbot avec contacts",leadText:"Permettez aux visiteurs de laisser leurs coordonnées et leur demande.",lead1:"Tout ce qui est inclus dans le chatbot IA",lead2:"Collecte du nom, de l’e-mail et du message",lead3:"Conçu pour générer des demandes",note:"Les prix correspondent à l’installation, en paiement unique. Les éventuels frais d’utilisation d’une IA externe ou intégrations supplémentaires sont discutés à l’avance.",cta:"Demander un chatbot ↗"},
+en:{eyebrow:"EXTRA SERVICE",title:"Add a smart chatbot to your website.",intro:"Help visitors find answers quickly, even when you are not available.",basicTag:"ESSENTIAL",basicTitle:"FAQ chatbot",once:"one-time",basicText:"Answers common questions about your services, opening hours and contact details.",basic1:"Predefined answers to common questions",basic2:"Styled to match your brand",basic3:"Mobile-friendly",popular:"POPULAR",aiTitle:"AI chatbot",aiText:"An AI chatbot that answers questions using information about your business.",ai1:"Answers based on your business information",ai2:"Dutch, French and English",ai3:"Customized for your website",extraTag:"MORE ENQUIRIES",leadTitle:"Lead capture chatbot",leadText:"Let visitors leave their contact details and request through the chatbot.",lead1:"Everything in the AI chatbot",lead2:"Collects name, email and message",lead3:"Designed to generate enquiries",note:"Prices are one-time setup fees. Any external AI usage charges or extra integrations will be discussed in advance.",cta:"Request a chatbot ↗"}
+};
+function updateChatbotLanguage(){
+ const lang=(document.documentElement.lang||"nl").slice(0,2);
+ const dict=chatbotTranslations[lang]||chatbotTranslations.nl;
+ document.querySelectorAll("[data-chatbot]").forEach(el=>{
+  const key=el.getAttribute("data-chatbot");
+  if(dict[key]) el.textContent=dict[key];
+ });
+}
+if(!h.includes('id="chatbot-services"')){
+ h=h.replace("</main>",chatbotSection+"</main>");
+ if(!h.includes("</main>")) throw new Error("Could not find </main> to insert chatbot section");
+}
+const chatbotLanguageScript = `<script id="chatbot-services-translations">
+${chatbotTranslations.toString()}
+${updateChatbotLanguage.toString()}
+document.addEventListener("DOMContentLoaded",updateChatbotLanguage);
+new MutationObserver(updateChatbotLanguage).observe(document.documentElement,{attributes:true,attributeFilter:["lang"]});
+updateChatbotLanguage();
+</script>`;
+if(!h.includes('id="chatbot-services-translations"')) h=h.replace("</body>",chatbotLanguageScript+"</body>");
